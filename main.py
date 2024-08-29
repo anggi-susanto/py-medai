@@ -1,11 +1,13 @@
-from flask import Flask
+import os
+from flask import Flask, send_from_directory
 from flasgger import Swagger
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from config.config import Config
 from app import create_app, db 
-
+from pathlib import Path
+UPLOAD_FOLDER = '/static/uploads/'
 app = create_app()
 
 # Initialize database
@@ -32,6 +34,12 @@ swagger_config = {
                 "scheme": "bearer",
                 "bearerFormat": "JWT"
             },
+            
+            "refreshToken": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            },
         },
         "schemas": {
             "User": {
@@ -43,6 +51,14 @@ swagger_config = {
                     "email": {"type": "string"},
                     "phone": {"type": "string"},
                     "profile_photo": {"type": "string"}
+                }
+            },
+            "UserUpdate": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "email": {"type": "string"},
+                    "phone": {"type": "string"},
                 }
             },
             "Login": {
@@ -65,6 +81,7 @@ swagger_config = {
     "security": [
         {
             "bearerAuth": [],
+            "refreshToken": []
         }
     ],
     "servers": [
@@ -104,6 +121,9 @@ from app.controllers.profile_controller import profile_controller
 
 app.register_blueprint(auth_controller, url_prefix='/api/v1/auth')
 app.register_blueprint(profile_controller, url_prefix='/api/v1')
+@app.route('/static/uploads/profile_photos/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], 'profile_photos'), filename)
 
 if __name__ == '__main__':
     app.run(debug=True)

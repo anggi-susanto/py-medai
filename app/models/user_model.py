@@ -21,7 +21,7 @@ class User(db.Model):
         self.profile_photo = profile_photo
 
 class UserSchema(Schema):
-    user_id = fields.Int(attribute='id')
+    id = fields.Int(attribute='id')
     name = fields.Str(required=True)
     username = fields.Str(required=True)
     email = fields.Email(required=True)

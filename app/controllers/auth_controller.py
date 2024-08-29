@@ -118,7 +118,7 @@ def login():
 @swag_from({
     'tags': ['Authentication'],
     'security': [
-        {"bearerAuth": []},
+        {"refreshToken": []},
     ],
     'responses': {
         '200': {
